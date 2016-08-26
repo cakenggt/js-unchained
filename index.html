@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Javascript Unchained</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+        <section data-background-image="img/chains.jpg">
+          <h1>Javascript Unchained</h1>
+        </section>
+        <section>
+          <h2>Javascript has two very important chains</h1>
+          <p class="fragment">
+            Prototype-chain
+          </p>
+          <p class="fragment">
+            Scope-chain
+          </p>
+        </section>
+        <section>
+          <h2>Prototype-chain</h2>
+          <p>
+            Object-oriented programming in JS
+          </p>
+          <aside class="notes">
+            Prototyping is how Javascript implements object oriented programming.
+            There is no such thing as a class in Javascript (even though there
+            is a "class" keyword in ES6).
+          </aside>
+        </section>
+        <section>
+          <section>
+            <h1>Objects in JS</h1>
+          </section>
+          <section>
+            <h2>How do you create objects in JS?</h2>
+            <pre class="fragment"><code data-trim>
+var LivingEntity = function(location){
+  this.x = location.x;
+  this.y = location.y;
+  this.z = location.z;
+};
+              </code></pre>
+              <aside class="notes">
+                An object's constructor is defined as just a function.
+                It is then differentiated from normal methods by calling it
+                with the word "new" in front of it, thus constructing a new object.
+              </aside>
+          </section>
+          <section>
+            <h2>Adding methods?</h2>
+            <pre class="fragment"><code data-trim>
+var dog = new LivingEntity({
+  x: 5,
+  y: 0,
+  z: 1
+});
+
+dog.moveWest = function(){
+  this.x--;
+};
+            </code></pre>
+            <div class="fragment">
+              <h3>Don't do this!</h3>
+              <p>
+                Unnecessary anonymous functions!
+              </p>
+            </div>
+            <aside class="notes">
+              Eventually the number of separate anonymous functions will cause
+              a memory leak in your environment.
+            </aside>
+          </section>
+          <section>
+            <pre class="fragment"><code class="hljs js" data-trim>
+LivingEntity.prototype.moveWest = function(){
+  this.x--;
+}
+            </code></pre>
+            <div class="fragment">
+              <h3>Do this!</h3>
+              <p>
+                Takes advantage of the prototype chain!
+              </p>
+              <p>
+                The functions defined on the prototype chain
+                only exist once, and references to them are
+                passed around.
+              </p>
+            </div>
+            <aside class="notes">
+              Prototype is an attribute of all functions, but is only useful
+              when defining it on a constructor. This is a virtual attribute,
+              but you can see the real prototype of an object by using "__proto__"
+              on an object, but this is not defined in the specs and can change.
+            </aside>
+          </section>
+        </section>
+        <section>
+          <h2>What is the prototype chain?</h2>
+          <p class="fragment">
+            Each object has a prototype, even the object that exists in another
+            object's prototype attribute.
+          </p>
+        </section>
+        <section>
+          <h2>How do you inherit from a superclass</h2>
+          <pre><code>
+var Dragon = function(location){
+  LivingEntity.call(this, location);
+  this.canFly = true;
+};
+
+Dragon.prototype = Object.create(LivingEntity);
+
+Dragon.prototype.fly = function(y){
+  this.y += y;
+};
+
+var sparky = new Dragon({
+  x: 0,
+  y: 0,
+  z: 0
+});
+          </code></pre>
+          <aside class="notes">
+            Function.call will execute that function, but replace the normal
+            "this" value with the provided value, and use any parameters
+            afterwards as parameters of the function.
+
+            Object.create creates an object with the prototype specified.
+          </aside>
+        </section>
+
+        <section>
+          <section>
+            <h2>What does the prototype-chain look like?</h2>
+          </section>
+          <section>
+            <table>
+              <thead>
+                <tr>
+                  <td>
+                    sparky
+                  </td>
+                  <td>
+                    sparky.__proto__
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>x, y, z, canFly</td>
+                  <td>fly</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section>
+            <table>
+              <thead>
+                <tr>
+                  <td>
+                    sparky.__proto__.__proto__
+                  </td>
+                  <td>
+                    sparky.__proto__.__proto__.__proto__
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>moveWest</td>
+                  <td>create, toString, etc...</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </section>
+          <aside class="notes">
+            It is important to note that sparky doesn't have any
+            references to it's class's methods (fly in this case)
+            except through the prototype chain
+          </aside>
+        </section>
+        <section>
+          <h2>What happens when I call a method on an object?</h2>
+          <p class="fragment">
+            The object is checked, then the prototype chain
+            is traversed until that method is found.
+          </p>
+        </section>
+        <section>
+          <h2>Scope-chain</h2>
+          <p>
+            How I learned to stop worrying and love closure
+          </p>
+        </section>
+        <section>
+          <h2>Anonymous functions</h2>
+          <p>
+            The root of the problem: Functions have a state!
+          </p>
+          <aside class="notes">
+            Functions in JavaScript are first class citizens, which means that
+            they can be passed around in variables. This also means that they can
+            be created whenever you want, not like in Java where objects all
+            come with functions initially. This is changing in Java with lambdas.
+            There are similar problems with Java and anonymous classes. However,
+            these do not give the ability for methods to have a state.
+          </aside>
+        </section>
+        <section>
+          <section>
+            <h2>Closure</h2>
+            <pre><code>
+var helloStr = 'world';
+var sayHello = function(name){
+  return function(){
+    console.log('Hello ' + name + '!');
+  }
+}
+var sayGreeting = sayHello(helloStr);
+//woops, I meant to greet Bob
+helloStr = 'Bob';
+sayGreeting();
+            </code></pre>
+          </section>
+          <section data-background-image="img/oh-you.jpg"></section>
+          <section>
+            <span>What about this?</span>
+            <pre><code>
+for (var i = 0; i < 10; i++){
+  setTimeout(function(){
+    console.log(i);
+  }, 1000);
+}
+            </code></pre>
+          </section>
+          <aside class="notes">
+            Closure is when an object is captured by a function, and can be referenced
+            whenever that function is called in the future. This gets a lot of
+            people in trouble, becuase they don't expect it to happen. In this
+            first example, the string was captured by the function, in the second,
+            it was not captured, and so it is referencing "i" when it was already
+            at 9 in the future.
+          </aside>
+        </section>
+        <section>
+          <h2>What is scope?</h2>
+          <p>
+            Javascript has function scope
+          </p>
+          <aside class="notes">
+            If you think of a function is JavaScript as a state machine,
+            scope is that state. Methods in Java cannot keep
+            state without using the state of their owner object. Functions
+            in JavaScript have their own state independent of their owner
+            object, and this is called scope. But much like the prototype
+            chain, it's not easy to view scope, aand there is no official
+            way to do it.
+          </aside>
+        </section>
+        <section>
+
+        </section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
