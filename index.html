@@ -276,12 +276,89 @@ for (var i = 0; i < 10; i++){
             state without using the state of their owner object. Functions
             in JavaScript have their own state independent of their owner
             object, and this is called scope. But much like the prototype
-            chain, it's not easy to view scope, aand there is no official
+            chain, it's not easy to view scope, and there is no official
             way to do it.
           </aside>
         </section>
         <section>
+          <h2>Scope Properties</h2>
+          <pre>
+{
+  _scope,
+  variables
+}
+          </pre>
+          <aside class="notes">
+            Every function has a scope, and when not inside of any function, the
+            global scope applies. This is not an exact definition, as there is one,
+            but it is useful. The "_scope" variable points to the previous scope,
+            forming the scope chain. The "variables" variable is a map of all
+            the variables declared in this scope and their values,
+            including variables passed into the scope. Whenever a variable is declared
+            in the scope, it is added to the variables map. Whenever it is initialized
+            or modified, it's value is modified in the map.
+          </aside>
+        </section>
+        <section>
+          <h2>How are closures related to the scope chain?</h2>
+          <p>
+            When a variable is used, the scope chain is traversed
+            to find the first time the variable was declared
+          </p>
+          <aside class="notes">
+            The first time the variable appears in the scope chain is the
+            value that is used and modified if that variable is used or modified.
+            Re-declaring a variable is a way of separating it from its previous
+            existence in the scope chain.
 
+            In the "Hello Bob!" example, the function returned was using its
+            newly declared "name" variable, instead of the "helloStr" variable.
+
+            In the setTimeout example, all 10 of the newly created functions were
+            using their shared reference to i, which went up to 10 and then stayed
+            there. They do not have individual references to i.
+          </aside>
+        </section>
+        <section>
+          <h2>Doing closure right</h2>
+          <pre><code>
+var logI = function(i){
+  return function(){
+    console.log(i);
+  }
+};
+for (var i = 0; i < 10; i++){
+  setTimeout(logI(i), 1000);
+}
+          </code></pre>
+          <aside class="notes">
+            If you wanted to make the previous setTimeout example work,
+            you have to capture "i" for each new function. Also note that
+            i is now immutable within each result of logI. This is a way
+            of creating immutable private variables in JavaScript.
+          </aside>
+        </section>
+        <section>
+          <h2>IIFE</h2>
+          <span>Immediately Invoked Functional Expression</span>
+          <pre><code>
+(function(global){
+  var privateVariable = 'No one can ever see me or change me';
+
+  global.getPrivateVariable = function(){
+    return privateVariable;
+  };
+})(window);
+          </code></pre>
+          <aside class="notes">
+            Immediately Invoked Functional Expressions are a pattern in JavaScript
+            that allow variables and methods to be made private by declaring them
+            inside a scope. This is how jQuery and a lot of other libraries are
+            structured.
+
+            Passing in the window object allows specific parts of
+            the IIFE to be exported to the global namespace.
+          </aside>
         </section>
 			</div>
 		</div>
