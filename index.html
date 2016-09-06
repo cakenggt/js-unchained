@@ -244,8 +244,19 @@ var sayGreeting = sayHello(helloStr);
 helloStr = 'Bob';
 sayGreeting();
             </code></pre>
+            <div class="fragment">
+              <span>Output</span>
+              <pre><code>
+Hello world!
+              </code></pre>
+            </div>
           </section>
-          <section data-background-image="img/oh-you.jpg"></section>
+          <section data-background-image="img/oh-you.jpg">
+            <aside class="notes">
+              This is an example of not capturing an object when you actually
+              meant to.
+            </aside>
+          </section>
           <section>
             <span>What about this?</span>
             <pre><code>
@@ -255,15 +266,30 @@ for (var i = 0; i < 10; i++){
   }, 1000);
 }
             </code></pre>
+            <div class="fragment">
+              <span>Output</span>
+              <pre><code>
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+              </code></pre>
+            </div>
+            <aside class="notes">
+              Closure is when an object is captured by a function, and can be referenced
+              whenever that function is called in the future. This gets a lot of
+              people in trouble, becuase they don't expect it to happen. In this
+              first example, the string was captured by the function, in the second,
+              it was not captured, and so it is referencing "i" when it was already
+              at 9 in the future.
+            </aside>
           </section>
-          <aside class="notes">
-            Closure is when an object is captured by a function, and can be referenced
-            whenever that function is called in the future. This gets a lot of
-            people in trouble, becuase they don't expect it to happen. In this
-            first example, the string was captured by the function, in the second,
-            it was not captured, and so it is referencing "i" when it was already
-            at 9 in the future.
-          </aside>
         </section>
         <section>
           <h2>What is scope?</h2>
@@ -290,7 +316,7 @@ for (var i = 0; i < 10; i++){
           </pre>
           <aside class="notes">
             Every function has a scope, and when not inside of any function, the
-            global scope applies. This is not an exact definition, as there is one,
+            global scope applies. This is not an exact definition, as there is none,
             but it is useful. The "_scope" variable points to the previous scope,
             forming the scope chain. The "variables" variable is a map of all
             the variables declared in this scope and their values,
