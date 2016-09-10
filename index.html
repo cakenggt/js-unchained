@@ -112,6 +112,10 @@ LivingEntity.prototype.moveWest = function(){
               when defining it on a constructor. This is a virtual attribute,
               but you can see the real prototype of an object by using "__proto__"
               on an object, but this is not defined in the specs and can change.
+
+              The difference between foo.__proto__ and Foo.prototype is that
+              foo.__proto__ is the prototype of that object, whereas Foo.prototype
+              will be and is the prototype of all objects constructed with new Foo()
             </aside>
           </section>
         </section>
@@ -124,7 +128,7 @@ LivingEntity.prototype.moveWest = function(){
         </section>
         <section>
           <h2>How do you inherit from a superclass</h2>
-          <pre><code>
+          <pre><code class="hljs js">
 var Dragon = function(location){
   LivingEntity.call(this, location);
   this.canFly = true;
@@ -147,7 +151,10 @@ var sparky = new Dragon({
             "this" value with the provided value, and use any parameters
             afterwards as parameters of the function.
 
-            Object.create creates an object with the prototype specified.
+            Object.create creates an object with the prototype specified. This creates an object
+            with an identical prototype chain as if you just did new LivingEntity(), but none
+            of the code in the constructor is run, so it is preferred when creating an object
+            for the purposes of a prototype chain.
           </aside>
         </section>
 
@@ -232,7 +239,7 @@ var sparky = new Dragon({
         <section>
           <section>
             <h2>Closure</h2>
-            <pre><code>
+            <pre><code class="hljs js">
 var helloStr = 'world';
 var sayHello = function(name){
   return function(){
@@ -246,7 +253,7 @@ sayGreeting();
             </code></pre>
             <div class="fragment">
               <span>Output</span>
-              <pre><code>
+              <pre><code class="hljs js">
 Hello world!
               </code></pre>
             </div>
@@ -259,7 +266,7 @@ Hello world!
           </section>
           <section>
             <span>What about this?</span>
-            <pre><code>
+            <pre><code class="hljs js">
 for (var i = 0; i < 10; i++){
   setTimeout(function(){
     console.log(i);
@@ -268,7 +275,7 @@ for (var i = 0; i < 10; i++){
             </code></pre>
             <div class="fragment">
               <span>Output</span>
-              <pre><code>
+              <pre><code class="hljs js">
 10
 10
 10
@@ -347,7 +354,7 @@ for (var i = 0; i < 10; i++){
         </section>
         <section>
           <h2>Doing closure right</h2>
-          <pre><code>
+          <pre><code class="hljs js">
 var logI = function(i){
   return function(){
     console.log(i);
@@ -367,7 +374,7 @@ for (var i = 0; i < 10; i++){
         <section>
           <h2>IIFE</h2>
           <span>Immediately Invoked Functional Expression</span>
-          <pre><code>
+          <pre><code class="hljs js">
 (function(global){
   var privateVariable = 'No one can ever see me or change me';
 
