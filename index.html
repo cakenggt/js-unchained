@@ -132,7 +132,9 @@ var Dragon = function(location){
   this.canFly = true;
 };
 
-Dragon.prototype = Object.create(LivingEntity);
+Dragon.prototype = Object.create(LivingEntity.prototype);
+
+Dragon.prototype.constructor = Dragon;
 
 Dragon.prototype.fly = function(y){
   this.y += y;
